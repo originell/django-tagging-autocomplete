@@ -13,7 +13,7 @@ class TagAutocomplete(Input):
 		return mark_safe("\n".join([html, js]))
 	
 	class Media:
-		js_base_url = getattr(settings, 'TAGGING_AUTOCOMPLETE_JS_BASE_URL','%s/jquery-autocomplete' % settings.MEDIA_URL)
+		js_base_url = getattr(settings, 'TAGGING_AUTOCOMPLETE_JS_BASE_URL','%sjquery-autocomplete' % settings.MEDIA_URL)
 		css = {
 		    'all': ('%s/jquery.autocomplete.css' % js_base_url,)
 		}

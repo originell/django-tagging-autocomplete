@@ -1,13 +1,15 @@
 from django.db import models
-from tagging.fields import TagField
-from tagging_autocomplete.widgets import TagAutocomplete
 from django.contrib.admin.widgets import AdminTextInputWidget
 
-# The following code is based on models.py file from django-tinymce by Joost Cassee
+from tagging.fields import TagField
+from tagging_autocomplete.widgets import TagAutocomplete
 
+
+# The following code is based on models.py file from django-tinymce
+# by Joost Cassee
 class TagAutocompleteField(TagField):
     """
-    TagField with autocomplete widget
+    TagField with autocomplete widget.
     """
     def formfield(self, **kwargs):
         defaults = {'widget': TagAutocomplete}

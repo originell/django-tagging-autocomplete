@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
-from setuptools import setup, find_packages
+from setuptools import setup
+from setuptools import find_packages
 
-long_description = open('README.txt').read()
 
 setup(
     name='django-tagging-autocomplete',
-    version='0.3.1',
-    description='Autocompletion for django-tagging',
-    long_description=long_description,
-    author='Ludwik Trammer',
-    author_email='ludwik@gmail.com',
-    url='http://code.google.com/p/django-tagging-autocomplete/',
+    version='0.3.2',
+    url='https://github.com/originell/django-tagging-autocomplete',
+    author='Ludwik Trammer, Luis Nell',
+    author_email='cooperate@originell.org',
     packages=find_packages(),
+    platforms='any',
+    description='Autocompletion for django-tagging',
+    long_description=open('README.rst').read(),
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Environment :: Web Environment',
@@ -22,6 +23,4 @@ setup(
         'Framework :: Django',
     ],
     zip_safe=False,
-    #package_data={},
-    #test_suite='tagging_autocomplete.tests.runtests.runtests'
 )

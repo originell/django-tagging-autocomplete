@@ -14,16 +14,53 @@ class TagAutocomplete(Input):
     def render(self, name, value, attrs=None):
         html = super(TagAutocomplete, self).render(name, value, attrs)
         list_view = reverse('tagging_autocomplete-list')
+        # Heavily inspired by LAB.js' small loader
+        # https://gist.github.com/603980
+        # Check if window.jQuery or window.django.jQuery exists,
+        # otherwise load jQuery from Google :-)
         js = u'''<script type="text/javascript">
-                      jQuery().ready(function() {
-                          jQuery("#%s").autocomplete("%s", { multiple: true });
-                      });
-                  </script>''' % (attrs['id'], list_view)
+          (function(global, oDOC) {
+              var jQuery = w.django.jQuery || w.jQuery;
+              if (!jQuery) {
+                  var head = oDOC.head || oDOC.getElementsByTagName("head");
+                  setTimeout(function () {
+                    if ("item" in head) {
+                        if (!head[0]) {
+                            setTimeout(arguments.callee, 25);
+                            return;
+                        }
+                        head = head[0];
+                    }
+                    var scriptElem = oDOC.createElement("script"),
+                        scriptdone = false;
+                    scriptElem.onload = scriptElem.onreadystatechange = function () {
+                        if ((scriptElem.readyState && scriptElem.readyState !== "complete" && scriptElem.readyState !== "loaded") || scriptdone) {
+                            return false;
+                        }
+                        scriptElem.onload = scriptElem.onreadystatechange = null;
+                        scriptdone = true;
+                    };
+                    scriptElem.src = "//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js";
+                    head.insertBefore(scriptElem, head.firstChild);
+                }, 0);
+
+                if (oDOC.readyState == null && oDOC.addEventListener) {
+                    oDOC.readyState = "loading";
+                    oDOC.addEventListener("DOMContentLoaded", handler = function () {
+                        oDOC.removeEventListener("DOMContentLoaded", handler, false);
+                        oDOC.readyState = "complete";
+                    }, false);
+                }
+              };
+              jQuery().ready(function() {
+                  jQuery("#%s").autocomplete("%s", { multiple: true });
+              });
+          })(window, document);
+                 </script>''' % (attrs['id'], list_view)
         return mark_safe("\n".join([html, js]))
 
     class Media:
-        css = {'all': '%s/jquery.autocomplete.css' % js_base_url, }
+        css = {'all': '%s/jquery.autocomplete.css' % JS_BASE_URL, }
         js = (
-            '%s/lib/jquery.js' % js_base_url,
-            '%s/jquery.autocomplete.js' % js_base_url,
+            '%s/jquery.autocomplete.js' % JS_BASE_URL,
         )

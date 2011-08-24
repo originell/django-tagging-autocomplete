@@ -18,12 +18,22 @@ class TagAutocomplete(Input):
         # https://gist.github.com/603980
         # Check if window.jQuery or window.django.jQuery exists,
         # otherwise load jQuery from Google :-)
-        js = u'''<script type="text/javascript">
-          (function(global, oDOC) {
-              var jQuery = w.django.jQuery || w.jQuery;
-              if (!jQuery) {
-                  var head = oDOC.head || oDOC.getElementsByTagName("head");
-                  setTimeout(function () {
+        js = u'''(function(global, oDOC) {
+            function runCode() {
+                if (!jQuery) {
+                    setTimeout(arguments.callee, 25);
+                    return;
+                }
+                jQuery().ready(function() {
+                    jQuery("#%s").autocomplete("%s", { multiple: true });
+                });
+            };
+
+            var jQuery = (global.django) ? global.django.jQuery : undefined || global.jQuery;
+            if (!jQuery) {
+                var head = oDOC.head || oDOC.getElementsByTagName("head");
+
+                setTimeout(function () {
                     if ("item" in head) {
                         if (!head[0]) {
                             setTimeout(arguments.callee, 25);
@@ -39,8 +49,9 @@ class TagAutocomplete(Input):
                         }
                         scriptElem.onload = scriptElem.onreadystatechange = null;
                         scriptdone = true;
+                        jQuery = global.jQuery;
                     };
-                    scriptElem.src = "//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js";
+                    scriptElem.src = "http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js";
                     head.insertBefore(scriptElem, head.firstChild);
                 }, 0);
 
@@ -51,12 +62,9 @@ class TagAutocomplete(Input):
                         oDOC.readyState = "complete";
                     }, false);
                 }
-              };
-              jQuery().ready(function() {
-                  jQuery("#%s").autocomplete("%s", { multiple: true });
-              });
-          })(window, document);
-                 </script>''' % (attrs['id'], list_view)
+            };
+            runCode();
+        })(window, document);''' % (attrs['id'], list_view)
         return mark_safe("\n".join([html, js]))
 
     class Media:
